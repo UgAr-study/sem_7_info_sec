@@ -3,26 +3,27 @@
 #include <algorithm>
 #include <vector>
 #include <random>
-#include "matrix.h"
+#include "Matrix.hpp"
+#include "BinMatrix.h"
 #include "utility.h"
 
 class qc_mdpc
 {
 private:
-    using row_t = std::vector<unsigned short>;
+    using row_t = std::vector<bool>;
 public:
     qc_mdpc(int n0, int p, int w, int t, int seed = -1);
-    bin_matrix parity_check_matrix() const;
-    bin_matrix generator_matrix() const;
-    bin_matrix encode(bin_matrix vec);
-    bin_matrix decode(bin_matrix word);
+    BinMatrix parity_check_matrix() const;
+    BinMatrix generator_matrix() const;
+    BinMatrix encode(const BinMatrix& vec) const;
+    BinMatrix decode(const BinMatrix& word) const;
 
 private:
     void reset_row();
     int get_row_weight(int begin, int end) const;
     static row_t shift_row(const row_t& row, int shift = 1);
     row_t splice_row(int begin, int end) const;
-    bin_matrix make_matrix(int nrows, int ncols, const row_t& row);
+    BinMatrix make_matrix(int nrows, int ncols, const row_t& row) const;
 private:
     std::mt19937 gen;
     row_t row; // one row is enough to describe the whole MDPC matrix
