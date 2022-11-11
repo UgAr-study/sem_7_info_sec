@@ -2,8 +2,13 @@
 
 
 qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
-        : n0(n0), p(p), w(w), t(t), row(n0 * p), gen(seed)
+        : n0(n0), p(p), w(w), t(t), row(n0 * p)
 {
+    if (seed == -1) {
+        gen.seed(time(0));
+    } else {
+        gen.seed(seed);
+    }
     n = n0 * p;
     r = p;
     k = (n0 - 1) * p;
