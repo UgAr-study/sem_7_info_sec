@@ -1,6 +1,4 @@
-
 #include "qc_mdpc.h"
-#include "Matrix.hpp"
 
 #include <iostream>
 #include <fstream>
