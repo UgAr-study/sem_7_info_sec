@@ -151,9 +151,9 @@ BinMatrix BinMatrix::circ_matrix_inverse() const {
 
     int i;
     for(i = 0; i < Num_Columns(); ++i) {
-        if((*this)[i][i]) {
+        if(copy[i][i]) {
             for(int j = 0; j < Num_Rows(); ++j) {
-                if(i != j && (*this)[j][i]) {
+                if(i != j && copy[j][i]) {
                     B.add_rows_new(i, j, 0, Num_Columns());
                     copy.add_rows_new(i, j, i, Num_Columns());
                 }
