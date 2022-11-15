@@ -30,7 +30,7 @@ qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
         }
         reset_row();
     }
-    printf("MDPC code generated....\n");
+    std::cout << "MDPC code generated....\n";
 }
 
 //Return the weight of the given row from the indices [min, max)
@@ -82,17 +82,13 @@ BinMatrix qc_mdpc::parity_check_matrix() const
     double cpu_time_used;
     start = clock();
     BinMatrix H = make_matrix(p, p, splice_row(0, p));
-    int i;
-    for (i = 1; i < n0; i++) {
+    for (int i = 1; i < n0; i++) {
         BinMatrix M = make_matrix(p, p, splice_row(i * p, (i + 1) * p));
         H = concat_horizontal(H, M);
     }
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Time for H: %f\n", cpu_time_used);
-    // printf("H: \n");
-    // print_matrix(H);
-    //printf("Parity matrix generated...\n");
+    std::cout << "Time for H: " << cpu_time_used << std::endl;
     return H;
 }
 
@@ -105,7 +101,7 @@ BinMatrix qc_mdpc::generator_matrix() const
     BinMatrix H = parity_check_matrix();
 
     //End of modified code
-    printf("Construction of G started...\n");
+    std::cout << "Construction of G started...\n";
     BinMatrix H_inv = make_matrix(p, p, splice_row((n0 - 1) * p, n)).circ_matrix_inverse();
     BinMatrix H_0 = make_matrix(p, p, splice_row(0, p));
     BinMatrix Q = matrix_mult(H_inv, H_0).Transposition();
@@ -123,8 +119,8 @@ BinMatrix qc_mdpc::generator_matrix() const
     //G = matrix_rref(G);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("Time for G: %f\n", cpu_time_used);
-    printf("Generator matrix generated....\n");
+    std::cout << "Time for G: " << cpu_time_used << std::endl;
+    std::cout << "Generator matrix generated....\n";
     return G;
 }
 
@@ -153,7 +149,6 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
 
     auto word_len = word.Num_Columns();
     for (int i = 0; i < limit; i++) {
-        //printf("Iteration: %d\n", i);
         std::vector<int> unsatisfied(word_len);
         for (int j = 0; j < word_len; j++) {
             for (int s = 0; s < H.Num_Rows(); s++) {
@@ -161,11 +156,6 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
                     unsatisfied[j] = unsatisfied[j] + 1;
             }
         }
-        // printf("No. of unsatisfied equations for each bit: \n");
-        // for(int idx = 0; idx < word_len; idx++)
-        // {
-        // 	printf("b%d: %d \n", idx, unsatisfied[idx]);
-        // }
         int b = get_max(unsatisfied) - delta;
         for (int j = 0; j < word_len; j++) {
             if (unsatisfied[j] >= b) {
@@ -173,16 +163,12 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
                 syn = syn + H.mat_splice(0, H.Num_Rows() - 1, j, j);
             }
         }
-        // printf("Syndrome: ");
-        // print_matrix(syn);
-        // printf("\n");
-        //printf("Iteration: %d\n", i);
         if (syn.is_zero_matrix()) {
             return word;
         }
     }
-    printf("Decoding failure...\n");
-    exit(0);
+    std::cout << "Decoding failure...\n";
+    return {0, 0};
 }
 
 
