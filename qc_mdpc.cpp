@@ -2,8 +2,15 @@
 
 
 qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
-        : n0(n0), p(p), w(w), t(t), row(n0 * p), gen(seed)
+        : n0(n0), p(p), w(w), t(t), row(n0 * p)
 {
+    if (seed == -1) {
+        seed = time(0);
+        gen.seed(seed);
+        std::cout << "Seed: " << seed << std::endl;
+    } else {
+        gen.seed(seed);
+    }
     n = n0 * p;
     r = p;
     k = (n0 - 1) * p;
@@ -61,8 +68,9 @@ BinMatrix qc_mdpc::make_matrix(int nrows, int ncols, const qc_mdpc::row_t &row) 
 {
     BinMatrix res(nrows, ncols);
     res[0] = row;
-    for (int i = 1; i < nrows; ++i)
-        res[i] = shift_row(row);
+    for (int i = 1; i < nrows; ++i) {
+        res[i] = shift_row(row, i);
+    }
 
     return res;
 }

@@ -5,7 +5,6 @@
 #include <random>
 #include "Matrix.hpp"
 #include "BinMatrix.h"
-#include "utility.h"
 
 class qc_mdpc
 {
