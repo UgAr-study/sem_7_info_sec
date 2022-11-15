@@ -15,6 +15,11 @@ public:
     int codeword_length() const { return n; }
     int word_length() const { return k; }
     int error_weight() const { return t; }
+    int perm_size() const { return p; }
+    int row_weight(int row) const { return w; }
+    int col_weight(int col) const { return w; }
+    const std::vector<int>& adjacent_var_nodes(int check) const;
+    const std::vector<int>& adjacent_check_nodes(int var) const;
     BinMatrix parity_check_matrix() const;
     BinMatrix generator_matrix() const;
     BinMatrix encode(const BinMatrix& vec) const;
@@ -39,5 +44,7 @@ private:
      * t -- error word weight
      */
     int n0, p, w, t, n, k, r;
+    mtrx::Matrix_t<int> row_col; //
+    mtrx::Matrix_t<int> col_row;
 };
 
