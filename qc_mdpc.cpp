@@ -161,23 +161,23 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
 {
     auto word = codeword;
     BinMatrix H = parity_check_matrix();
-    BinMatrix syn = matrix_mult(H, word.Transposition());
+    BinMatrix syn = matrix_mult(H, word);
     int limit = 10;
     int delta = 5;
 
-    auto word_len = word.Num_Columns();
+    auto word_len = word.Num_Rows();
     for (int i = 0; i < limit; i++) {
         std::vector<int> unsatisfied(word_len);
         for (int j = 0; j < word_len; j++) {
             for (int s = 0; s < H.Num_Rows(); s++) {
                 if (H[s][j] == 1 && syn[s][0] == 1)
-                    unsatisfied[j] = unsatisfied[j] + 1;
+                    ++unsatisfied[j];
             }
         }
         int b = get_max(unsatisfied) - delta;
         for (int j = 0; j < word_len; j++) {
             if (unsatisfied[j] >= b) {
-                word[0][j] = !word[0][j];
+                word[j][0] = !word[j][0];
                 syn = syn + H.mat_splice(0, H.Num_Rows() - 1, j, j);
             }
         }

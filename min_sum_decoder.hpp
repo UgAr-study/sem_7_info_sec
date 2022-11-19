@@ -11,8 +11,8 @@ public:
     MinSumDecoder(qc_mdpc qcMdpc, int maxItNum = 32)
             : qcMdpc(std::move(qcMdpc)), maxItNum(maxItNum) {};
 
-    virtual std::vector<int> encode(const std::vector<int> &word);
-    virtual std::vector<int> decode(const std::vector<int> &codeword);
+    virtual std::vector<int> encode(const std::vector<bool> &word);
+    virtual std::vector<bool> decode(const std::vector<int> &codeword);
 
 private:
     std::vector<std::vector<int>> R_msgs; // var * check

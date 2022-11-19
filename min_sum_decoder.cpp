@@ -1,12 +1,12 @@
 #include "min_sum_decoder.hpp"
 #include <cassert>
 
-std::vector<int> MinSumDecoder::encode(const std::vector<int>& word) {
+std::vector<int> MinSumDecoder::encode(const std::vector<bool>& word) {
     // TODO
 
 }
 
-std::vector<int> MinSumDecoder::decode(const std::vector<int>& in_llrs) {
+std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) {
     // TODO
     int itNum = 0;
 
@@ -58,9 +58,9 @@ std::vector<int> MinSumDecoder::decode(const std::vector<int>& in_llrs) {
         }
         itNum++;
     }
-    std::vector<int> res(in_llrs);
-    for (int i = 0; i < res.size(); ++i) {
-        res[i] = x[i][0];
-    }
+    auto decoded_word = qcMdpc.decode(x);
+    std::vector<bool> res(decoded_word.Num_Rows());
+    for (int i = 0; i < res.size(); ++i)
+        res[i] = decoded_word[i][0];
     return res;
 }
