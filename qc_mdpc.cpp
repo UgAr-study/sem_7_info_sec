@@ -2,7 +2,8 @@
 
 
 qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
-        : n0(n0), p(p), w(w), t(t), row(n0 * p)
+        : n0(n0), p(p), w(w), t(t), n(n0 * p), r(p), k((n0 - 1) * p),
+        row(n0 * p), row_col(p, w), col_row(n0 * p, w)
 {
     if (seed == -1) {
         seed = time(0);
@@ -11,9 +12,6 @@ qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
     } else {
         gen.seed(seed);
     }
-    n = n0 * p;
-    r = p;
-    k = (n0 - 1) * p;
 
     std::uniform_int_distribution<int> u_rand(0, row.size() - 1);
     while (true) {
@@ -31,6 +29,7 @@ qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
         reset_row();
     }
     std::cout << "MDPC code generated....\n";
+    fill_reverse();
 }
 
 //Return the weight of the given row from the indices [min, max)
@@ -63,6 +62,25 @@ qc_mdpc::row_t qc_mdpc::splice_row(int begin, int end) const
     return res;
 }
 
+// fill row_col and col_row
+void qc_mdpc::fill_reverse()
+{
+    int id = 0;
+    for (int c = 0; c < row.size(); ++c)
+        if (row[c] == 1)
+            row_col[0][id++] = c;
+    for (int i = 1; i < row_col.Num_Rows(); ++i)
+        for (int c = 0; c < row_col.Num_Columns(); ++c)
+            row_col[i][c] = row_col[0][c] / perm_size() + (row_col[0][c] + i) % perm_size();
+
+    std::vector<int> ids(col_row.Num_Rows());
+    for (int i = 0; i < row_col.Num_Rows(); ++i) {
+        for (int c = 0; c < row_col.Num_Columns(); ++c) {
+            int col = row_col[i][c];
+            col_row[col][ids[col]++] = i;
+        }
+    }
+}
 //Create a binary circular matrix
 BinMatrix qc_mdpc::make_matrix(int nrows, int ncols, const qc_mdpc::row_t &row) const
 {

@@ -18,8 +18,8 @@ public:
     int perm_size() const { return p; }
     int row_weight(int row) const { return w; }
     int col_weight(int col) const { return w; }
-    const std::vector<int>& adjacent_var_nodes(int check) const;
-    const std::vector<int>& adjacent_check_nodes(int var) const;
+    int adjacent_var_node(int check, int id) const { return row_col[check][id]; };
+    int adjacent_check_node(int var, int id) const { return col_row[var][id]; };
     BinMatrix parity_check_matrix() const;
     BinMatrix generator_matrix() const;
     BinMatrix encode(const BinMatrix& vec) const;
@@ -31,6 +31,7 @@ private:
     static row_t shift_row(const row_t& row, int shift = 1);
     row_t splice_row(int begin, int end) const;
     BinMatrix make_matrix(int nrows, int ncols, const row_t& row) const;
+    void fill_reverse();
 private:
     std::mt19937 gen;
     row_t row; // one row is enough to describe the whole MDPC matrix
@@ -44,7 +45,7 @@ private:
      * t -- error word weight
      */
     int n0, p, w, t, n, k, r;
-    mtrx::Matrix_t<int> row_col; //
-    mtrx::Matrix_t<int> col_row;
+    mtrx::Matrix_t<int> row_col; // positions of ones in rows
+    mtrx::Matrix_t<int> col_row; // positions of ones in columns
 };
 
