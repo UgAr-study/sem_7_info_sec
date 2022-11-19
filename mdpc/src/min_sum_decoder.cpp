@@ -33,9 +33,15 @@ std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) {
         for (int var_id = 0; var_id < qcMdpc.codeword_length(); ++var_id) {
             int globalSum = in_llrs[var_id] + std::accumulate(R_msgs[var_id].begin(), R_msgs[var_id].end(), int());
             int subMsg = 0;
-            for (const auto &check_id: qcMdpc.adjacent_check_nodes(var_id)) {
-                int index = *std::find(qcMdpc.adjacent_var_nodes(check_id).begin(),
-                                      qcMdpc.adjacent_var_nodes(check_id).end(), var_id);
+            for (int i = 0; i < qcMdpc.col_weight(var_id); ++i) {
+                int check_id = qcMdpc.adjacent_check_node(var_id, i);
+                int index = 0;
+                for (int j = 0; j < qcMdpc.row_weight(check_id); ++j) {
+                    if (qcMdpc.adjacent_var_node(check_id, j) == var_id) {
+                        index = j;
+                        break;
+                    }
+                }
                 Q_msgs[check_id][index] = globalSum - R_msgs[subMsg][check_id];
                 subMsg++;
             }
@@ -44,7 +50,8 @@ std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) {
         for (int check_id = 0; check_id < qcMdpc.word_length(); ++check_id) {
             int minVal = *std::min_element(Q_msgs[check_id].begin(), Q_msgs[check_id].end());
             int sign = 1;
-            for (const auto& var_id : qcMdpc.adjacent_var_nodes(check_id)) {
+            for (int i = 0; i < qcMdpc.row_weight(check_id); ++i) {
+                int var_id = qcMdpc.adjacent_var_node(check_id, i);
                 sign *= Q_msgs[check_id][var_id];
                 if (Q_msgs[check_id][var_id] < 0) {
                     sign *= -1;
@@ -56,9 +63,15 @@ std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) {
                 }
             }
             int subMsg = 0;
-            for (const auto& var_id : qcMdpc.adjacent_var_nodes(check_id)) {
-                int index = *std::find(qcMdpc.adjacent_check_nodes(var_id).begin(),
-                                       qcMdpc.adjacent_check_nodes(var_id).end(), check_id);
+            for (int i = 0; i < qcMdpc.row_weight(check_id); ++i) {
+                int var_id = qcMdpc.adjacent_var_node(check_id, i);
+                int index = 0;
+                for (int j = 0; j < qcMdpc.col_weight(var_id); ++j) {
+                    if (qcMdpc.adjacent_check_node(var_id, j) == check_id) {
+                        index = j;
+                        break;
+                    }
+                }
                 R_msgs[var_id][index] = minVal * sign / (Q_msgs[var_id][subMsg]);
                 subMsg++;
             }
