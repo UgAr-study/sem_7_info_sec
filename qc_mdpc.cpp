@@ -152,8 +152,8 @@ static int get_max(const std::vector<int> &vec)
 BinMatrix qc_mdpc::encode(const BinMatrix &vec) const
 {
     BinMatrix G = generator_matrix();
-    BinMatrix msg = matrix_mult(vec, G);
-    return msg;
+    BinMatrix msg = matrix_mult(vec.Transposition(), G);
+    return msg.Transposition();
 }
 
 //Decoding the codeword
