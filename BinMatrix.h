@@ -10,6 +10,7 @@ public:
     BinMatrix() : mtrx::Matrix_t<bool>() {}
     BinMatrix(size_t numRows, size_t numColumns) : mtrx::Matrix_t<bool>(numRows, numColumns) {}
     BinMatrix(const BinMatrix& other)  = default;
+    BinMatrix(const std::vector<bool>& vecMtrx, int numRows, int numColumns);
     BinMatrix(Matrix_t<bool> matrix) : mtrx::Matrix_t<bool>(matrix){}
 
     BinMatrix& add_rows(size_t row1, size_t row2);
