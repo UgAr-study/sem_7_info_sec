@@ -1,7 +1,7 @@
 #include "mceliece_min_sum.h"
 
 mceliece_min_sum::mceliece_min_sum(int n0, int p, int w, float snr, int seed)
-        : code(n0, p, w), public_key(code.generator_matrix()), ch(snr)
+        : code(n0, p, w), public_key(code.generator_matrix()), ch(snr), decoder(code)
 {
 }
 
@@ -27,5 +27,17 @@ std::vector<int> mceliece_min_sum::encrypt(const BinMatrix &msg)
 
 BinMatrix mceliece_min_sum::decrypt(const std::vector<int> &msg) const
 {
-    return {0, 0};
+    if (msg.size() != code.codeword_length()) {
+        printf("Length of message is incorrect.\n");
+        exit(0);
+    }
+    //printf("Decryption started...\n");
+    auto decodeRes = decoder.decode(msg);
+//    msg = msg.mat_splice(0, msg.Num_Rows() - 1, 0, code.word_length() - 1);
+//    return msg;
+    BinMatrix res(1, code.word_length());
+    for (int i = 0; i < code.word_length(); ++i) {
+        res[0][i] = decodeRes[i];
+    }
+    return res;
 }

@@ -239,8 +239,8 @@ BinMatrix BinMatrix::mat_kernel() const {
     return ans.matrix_rref();
 }
 
-BinMatrix::BinMatrix(const std::vector<bool> &vecMtrx, int numRows, int numColumns) {
-    assert(vecMtrx.size() != numRows * numColumns);
+BinMatrix::BinMatrix(const std::vector<bool> &vecMtrx, int numRows, int numColumns) : BinMatrix(numRows, numColumns) {
+    assert(vecMtrx.size() == numRows * numColumns);
     for (int row = 0; row < numRows; ++row) {
         for (int col = 0; col < numColumns; ++col) {
             (*this)[row][col] = vecMtrx[row * numColumns + col];
