@@ -71,7 +71,7 @@ void qc_mdpc::fill_reverse()
             row_col[0][id++] = c;
     for (int i = 1; i < row_col.Num_Rows(); ++i)
         for (int c = 0; c < row_col.Num_Columns(); ++c)
-            row_col[i][c] = row_col[0][c] / perm_size() + (row_col[0][c] + i) % perm_size();
+            row_col[i][c] = row_col[0][c] / perm_size() * perm_size() + (row_col[0][c] + i) % perm_size();
 
     std::vector<int> ids(col_row.Num_Rows());
     for (int i = 0; i < row_col.Num_Rows(); ++i) {
