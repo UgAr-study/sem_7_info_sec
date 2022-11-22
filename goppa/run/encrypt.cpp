@@ -61,7 +61,7 @@ int main()
     const std::string fName_msg = "msg.txt";
     const std::string fName_cipher = "cipher.txt";
     // test plain text
-    const std::string plaintext = "bbbbbbbbbbbdjsksbbbbbbbbbbbbbbbbbbbbbb";
+    const std::string plaintext = "ArtemIgnatdjsksbbbbbbbbbbbbbbbbbbbDima";
     assert(plaintext.size() == 38); // small step to goal FIXME 
 
     // set seed

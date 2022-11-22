@@ -112,20 +112,25 @@ arma::mat findnullspace(const arma::mat &H)
 }
 
 
+unsigned int g_z[14]={53,100,17,229,248,45,120,152,113,131,133,197,103,129};	
 
-int main(int argc, char const *argv[]) 
+
+int main() 
 {
     const std::string fName_privateG = "privateG.txt";
     const std::string fName_privateS = "privateS.txt";
     const std::string fName_privateP = "privateP.txt";
+    const std::string fName_matH = "matH.txt";
     const std::string fName_public = "public.txt";
 
-    const int seed = 911;
+    // set seed
+    //=--------
+    int seed = 911;
     if(seed == -1) {
-        std::srand(std::time(0));
-    } else {
-        std::srand(seed);
+        seed = std::time(0);
     }
+    std::srand(seed);
+    arma::arma_rng::set_seed(seed);
 
 
     unsigned int p_x = 0x0000012b;
@@ -136,37 +141,7 @@ int main(int argc, char const *argv[])
 		a[i] = galois_pow(2,i-1,p_x);
 	}
 
-	unsigned int g_z[14]={0};
-	g_z[0] = 53;
-    g_z[1] = 100;
-    g_z[2] = 17;
-    g_z[3] = 229;
-    g_z[4] = 248;
-    g_z[5] = 45;
-    g_z[6] = 120;
-    g_z[7] = 152;
-    g_z[8] = 113;
-    g_z[9] = 131;
-    g_z[10] = 133;
-    g_z[11] = 197;
-    g_z[12] = 103;
-    g_z[13] = 129;	
 	int degree = 13;
-	int N = 0;
-
-  	while(N<256)
-  	{	
-  		N = 0;
-		g_z[degree] = a[std::rand() % 255 + 1];
-		
-		for (int i = 0; i < degree; ++i)
-		//the rest of coefficient from 0 to 255
-		g_z[i] = a[std::rand() % 255];
-
-		for (int i = 0; i < 256; ++i)
-			if(G_z(a[i],p_x,g_z,degree)!=0)
-				N++;
-	}
 	
 	for (int i = 1; i < N; ++i)	
 		a[i] = galois_pow(2,i-1,p_x);	
@@ -236,6 +211,10 @@ int main(int argc, char const *argv[])
 
     fOut.open(fName_privateP);
     P.save(fOut, arma::raw_ascii);
+    fOut.close();
+
+    fOut.open(fName_matH);
+    H.save(fOut, arma::raw_ascii);
     fOut.close();
 
     return 0;

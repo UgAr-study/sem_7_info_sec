@@ -29,3 +29,16 @@ add_executable(
 )
 target_include_directories(${ENCRYPT_EXEC} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
 target_link_libraries(${ENCRYPT_EXEC} ${ARMADILLO_LIBRARIES})
+
+
+# decrypt
+#=-------
+set(DECRYPT_EXEC goppa_decrypt)
+add_executable(
+        ${DECRYPT_EXEC}
+        run/decrypt.cpp
+        src/GF.cpp
+        src/Euclidean.cpp
+)
+target_include_directories(${DECRYPT_EXEC} PUBLIC ${ARMADILLO_INCLUDE_DIRS})
+target_link_libraries(${DECRYPT_EXEC} ${ARMADILLO_LIBRARIES})
