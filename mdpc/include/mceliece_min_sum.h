@@ -5,6 +5,7 @@
 #include "BinMatrix.h"
 #include "channel.h"
 #include "qc_mdpc.h"
+#include "min_sum_decoder.hpp"
 
 class mceliece_min_sum {
 public:
@@ -17,6 +18,7 @@ public:
     BinMatrix decrypt(const std::vector<int> &msg) const;
 private:
     qc_mdpc code;
+    MinSumDecoder decoder;
     BinMatrix public_key;
     awgn ch;
 };

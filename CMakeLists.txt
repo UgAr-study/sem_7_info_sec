@@ -29,3 +29,16 @@ add_executable(
 target_include_directories(encrypt PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/mdpc/include
 )
+
+add_executable(
+        decrypt
+        test.cpp
+        mdpc/src/mceliece.cpp
+        mdpc/src/qc_mdpc.cpp
+        mdpc/src/BinMatrix.cpp
+        mdpc/src/channel.cpp
+        mdpc/src/min_sum_decoder.cpp
+        mdpc/src/mceliece_min_sum.cpp)
+target_include_directories(encrypt PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}/mdpc/include
+        )
