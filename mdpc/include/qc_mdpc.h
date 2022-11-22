@@ -11,10 +11,9 @@ class qc_mdpc
 private:
     using row_t = std::vector<bool>;
 public:
-    qc_mdpc(int n0, int p, int w, int t, int seed = -1);
+    qc_mdpc(int n0, int p, int w, int seed = -1);
     int codeword_length() const { return n; }
     int word_length() const { return k; }
-    int error_weight() const { return t; }
     int perm_size() const { return p; }
     int row_weight(int row) const { return w; }
     int col_weight(int col) const { return w; }
@@ -42,9 +41,8 @@ private:
      * r = p -- number of rows in the matrix
      * k = n - r -- non encoded word's length
      * w -- row weight
-     * t -- error word weight
      */
-    int n0, p, w, t, n, k, r;
+    int n0, p, w, n, k, r;
     mtrx::Matrix_t<int> row_col; // positions of ones in rows
     mtrx::Matrix_t<int> col_row; // positions of ones in columns
 };

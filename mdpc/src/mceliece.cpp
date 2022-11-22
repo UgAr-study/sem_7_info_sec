@@ -2,7 +2,7 @@
 
 //Initialize the mceliece cryptosystem
 mceliece::mceliece(int n0, int p, int w, int t, int seed)
-        : code(n0, p, w, t), public_key(code.generator_matrix()), gen(seed)
+        : code(n0, p, w), public_key(code.generator_matrix()), gen(seed), error_weight(t)
 {
 }
 
@@ -13,7 +13,7 @@ BinMatrix mceliece::get_error_vector()
     int curr_weight = 0;
     int idx;
     std::uniform_int_distribution<int> u_rand(1, code.codeword_length() - 1);
-    while (curr_weight < code.error_weight()) {
+    while (curr_weight < error_weight) {
         idx = u_rand(gen);
         if (!error[0][idx]) {
             error[0][idx] = 1;

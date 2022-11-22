@@ -1,15 +1,16 @@
 #include "../include/channel.h"
 
-std::vector<int> bpsk::modulate(std::vector<int> x)
+std::vector<float> bpsk::modulate(const std::vector<bool>& x)
 {
-    for (auto & i : x)
-        i = 2 * i - 1;
-    return x;
+    std::vector<float> res(x.size());
+    for (int i = 0; i < x.size(); ++i)
+        res[i] = 2.f * x[i] - 1.f;
+    return res;
 }
 
-std::vector<int> bpsk::demodulate(std::vector<int> x)
+std::vector<float> bpsk::demodulate_llr(std::vector<float> x, float sigma)
 {
     for (auto & i : x)
-        i = (i + 1) / 2;
+        i = 2.f * i / sigma / sigma;
     return x;
 }

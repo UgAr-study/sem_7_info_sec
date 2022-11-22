@@ -25,7 +25,7 @@ add_executable(
         mdpc/src/qc_mdpc.cpp
         mdpc/src/BinMatrix.cpp
         mdpc/src/min_sum_decoder.cpp
-)
+        mdpc/src/mceliece_min_sum.cpp)
 target_include_directories(encrypt PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/mdpc/include
 )
