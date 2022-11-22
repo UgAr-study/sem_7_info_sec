@@ -12,6 +12,7 @@ private:
     BinMatrix get_error_vector();
 private:
     qc_mdpc code;
+    int error_weight;
     BinMatrix public_key;
     std::mt19937 gen;
 };
