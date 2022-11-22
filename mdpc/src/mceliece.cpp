@@ -1,4 +1,4 @@
-#include "mceliece.h"
+#include "../include/mceliece.h"
 
 //Initialize the mceliece cryptosystem
 mceliece::mceliece(int n0, int p, int w, int t, int seed)

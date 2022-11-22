@@ -1,8 +1,15 @@
-#include "min_sum_decoder.hpp"
+#include "../include/min_sum_decoder.hpp"
 #include <cassert>
 
 std::vector<int> MinSumDecoder::encode(const std::vector<bool>& word) {
     // TODO
+    BinMatrix vec(word, word.size(), 1);
+    auto codeword = qcMdpc.encode(vec);
+
+    std::vector<int> encoded(codeword.Num_Rows());
+    // map 0, 1 to 1, -1
+    for (int i = 0; i < encoded.size(); ++i)
+        encoded[i] = 1 - 2 * codeword[i][0];
 
 }
 

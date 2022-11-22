@@ -1,4 +1,4 @@
-#include "BinMatrix.h"
+#include "../include/BinMatrix.h"
 
 BinMatrix &BinMatrix::add_rows(size_t row1, size_t row2) {
     for(size_t i = 0; i < Num_Columns(); ++i) {

@@ -1,4 +1,4 @@
-#include "qc_mdpc.h"
+#include "../include/qc_mdpc.h"
 
 #include <iostream>
 #include <fstream>

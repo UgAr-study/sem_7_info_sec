@@ -1,4 +1,4 @@
-#include "qc_mdpc.h"
+#include "../include/qc_mdpc.h"
 
 
 qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
