@@ -17,7 +17,10 @@ public:
     int error_weight() const { return t; }
     int perm_size() const { return p; }
     int row_weight(int row) const { return w; }
-    int col_weight(int col) const { return w; }
+    int col_weight(int col) const {
+        return get_row_weight(col / perm_size() * perm_size(),
+                              (col / perm_size() + 1) * perm_size());
+    }
     int adjacent_var_node(int check, int id) const { return row_col[check][id]; };
     int adjacent_check_node(int var, int id) const { return col_row[var][id]; };
     BinMatrix parity_check_matrix() const;
