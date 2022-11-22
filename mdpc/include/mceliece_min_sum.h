@@ -18,7 +18,5 @@ public:
 private:
     qc_mdpc code;
     BinMatrix public_key;
-    std::mt19937 gen;
     awgn ch;
-    float snr;
 };
