@@ -1,7 +1,7 @@
 #include "mceliece_min_sum.h"
 
 mceliece_min_sum::mceliece_min_sum(int n0, int p, int w, float snr, int seed)
-        : code(n0, p, w), public_key(code.generator_matrix()), gen(seed), ch(snr), snr(snr)
+        : code(n0, p, w), public_key(code.generator_matrix()), ch(snr)
 {
 }
 
@@ -17,7 +17,7 @@ std::vector<int> mceliece_min_sum::encrypt(const BinMatrix &msg)
 
     auto modulated = bpsk::modulate(word_vec);
     auto rx = ch(modulated);
-    auto llr = bpsk::demodulate_llr(rx, snr);
+    auto llr = bpsk::demodulate_llr(rx, ch.sigma);
     std::vector<int> res(llr.size());
     float scale = 10.f; // scale factor for quantization
     for (int i = 0; i < res.size(); ++i)
