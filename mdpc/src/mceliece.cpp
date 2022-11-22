@@ -27,7 +27,7 @@ BinMatrix mceliece::get_error_vector()
 BinMatrix mceliece::encrypt(const BinMatrix &msg)
 {
     if (msg.Num_Columns() != public_key.Num_Rows()) {
-        printf("Length of message is incorrect.\n");
+        printf("Length of message is incorrect: expected %d\n", public_key.Num_Rows());
         exit(0);
     }
     BinMatrix error = get_error_vector();
