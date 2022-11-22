@@ -14,3 +14,18 @@ add_executable(
         mdpc/src/min_sum_decoder.cpp
         mdpc/src/channel.cpp
 )
+target_include_directories(${KEY_GEN_EXEC} PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}/mdpc/include
+)
+
+add_executable(
+        encrypt
+        mdpc/run/encrypt.cpp
+        mdpc/src/mceliece.cpp
+        mdpc/src/qc_mdpc.cpp
+        mdpc/src/BinMatrix.cpp
+        mdpc/src/min_sum_decoder.cpp
+)
+target_include_directories(encrypt PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}/mdpc/include
+)
