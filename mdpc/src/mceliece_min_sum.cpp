@@ -27,5 +27,5 @@ std::vector<int> mceliece_min_sum::encrypt(const BinMatrix &msg)
 
 BinMatrix mceliece_min_sum::decrypt(const std::vector<int> &msg) const
 {
-    return std::vector<int>();
+    return {0, 0};
 }

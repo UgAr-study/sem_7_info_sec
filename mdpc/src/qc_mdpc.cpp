@@ -152,8 +152,8 @@ static int get_max(const std::vector<int> &vec)
 BinMatrix qc_mdpc::encode(const BinMatrix &vec) const
 {
     BinMatrix G = generator_matrix();
-    BinMatrix msg = matrix_mult(vec.Transposition(), G);
-    return msg.Transposition();
+    BinMatrix msg = matrix_mult(vec, G);
+    return msg;
 }
 
 //Decoding the codeword
@@ -161,11 +161,11 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
 {
     auto word = codeword;
     BinMatrix H = parity_check_matrix();
-    BinMatrix syn = matrix_mult(H, word);
+    BinMatrix syn = matrix_mult(H, word.Transposition());
     int limit = 10;
     int delta = 5;
 
-    auto word_len = word.Num_Rows();
+    auto word_len = word.Num_Columns();
     for (int i = 0; i < limit; i++) {
         std::vector<int> unsatisfied(word_len);
         for (int j = 0; j < word_len; j++) {
@@ -177,7 +177,7 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
         int b = get_max(unsatisfied) - delta;
         for (int j = 0; j < word_len; j++) {
             if (unsatisfied[j] >= b) {
-                word[j][0] = !word[j][0];
+                word[0][j] = !word[0][j];
                 syn = syn + H.mat_splice(0, H.Num_Rows() - 1, j, j);
             }
         }
