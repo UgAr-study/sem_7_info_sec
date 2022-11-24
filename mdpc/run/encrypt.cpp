@@ -2,7 +2,7 @@
 #include "../include/mceliece.h"
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <fstream>
 
 int main(int argc, char const *argv[])
 {
@@ -33,17 +33,13 @@ int main(int argc, char const *argv[])
 		msg[0][i] = inp;
 	}
 
-	mceleice crypt (n0, p, w, t, seed);
+	mceliece crypt (n0, p, w, t, seed);
     BinMatrix m = crypt.encrypt (msg);
 
-    outStream.open ("Encryption.txt");
+	std::ofstream outStream("Encryption.txt");
     outStream << "Encryption message: \n";
-
-    for (int i = 0; i < m->cols; i++)
-    {
-        outStream << m[0][i] << " ";
-    }
-    outStream.close ();
+	outStream << m;
+    outStream.close();
 	
 	return 0;
 }
