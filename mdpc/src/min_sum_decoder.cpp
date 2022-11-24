@@ -1,73 +1,90 @@
-#include "../include/min_sum_decoder.hpp"
+#include "min_sum_decoder.hpp"
 #include <cassert>
 
-std::vector<int> MinSumDecoder::encode(const std::vector<bool>& word) {
+//std::vector<int> MinSumDecoder::encode(const std::vector<bool>& word) {
+//    // TODO
+//    BinMatrix vec(word, word.size(), 1);
+//    auto codeword = qcMdpc.encode(vec);
+//
+//    std::vector<bool> codeword_vec(codeword.Num_Rows());
+//    for (int i = 0; i < codeword_vec.size(); ++i)
+//        codeword_vec[i] = codeword[i][0];
+//    auto modulated = bpsk::modulate(codeword_vec);
+//    auto rx = ch(modulated);
+//}
+
+std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) const {
     // TODO
-    BinMatrix vec(word, word.size(), 1);
-    auto codeword = qcMdpc.encode(vec);
 
-    std::vector<int> encoded(codeword.Num_Rows());
-    // map 0, 1 to 1, -1
-    for (int i = 0; i < encoded.size(); ++i)
-        encoded[i] = 1 - 2 * codeword[i][0];
+    int rowWeight = qcMdpc.row_weight(0);
 
-}
+    std::vector<std::vector<int>> R_msgs(qcMdpc.word_length(), std::vector<int>(rowWeight)); // Check2Var
+    std::vector<std::vector<int>> Q_msgs(qcMdpc.word_length(), std::vector<int>(rowWeight)); // Var2Check
 
-std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) {
-    // TODO
     int itNum = 0;
 
     BinMatrix H = qcMdpc.parity_check_matrix();
+    std::cout << H << std::endl;
     BinMatrix x(in_llrs.size(), 1);
 
     while (itNum < maxItNum) {
-        for (int var_id = 0; var_id < qcMdpc.codeword_length(); ++var_id) {
-            int sum = std::accumulate(R_msgs[var_id].begin(), R_msgs[var_id].end(), int());
-            x[var_id][0] = (sum > 0) ? 1 : 0;
+        std::vector<int> sums = in_llrs;
+        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+            for (int varId = 0; varId < rowWeight; ++varId) {
+                sums[qcMdpc.adjacent_var_node(check, varId)] += R_msgs[check][varId];
+            }
         }
+
+        for (int var = 0; var < qcMdpc.codeword_length(); ++var) {
+            x[var][0] = (sums[var] >= 0) ? 1 : 0;
+        }
+
         if (matrix_mult(H, x).is_zero_matrix()) {
             break;
         }
 
         // Vertical
-        for (int var_id = 0; var_id < qcMdpc.codeword_length(); ++var_id) {
-            int globalSum = in_llrs[var_id] + std::accumulate(R_msgs[var_id].begin(), R_msgs[var_id].end(), int());
-            int subMsg = 0;
-            for (const auto &check_id: qcMdpc.adjacent_check_nodes(var_id)) {
-                int index = *std::find(qcMdpc.adjacent_var_nodes(check_id).begin(),
-                                      qcMdpc.adjacent_var_nodes(check_id).end(), var_id);
-                Q_msgs[check_id][index] = globalSum - R_msgs[subMsg][check_id];
-                subMsg++;
+        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+            for (int varId = 0; varId < rowWeight; ++varId) {
+              Q_msgs[check][varId] = sums[qcMdpc.adjacent_var_node(check, varId)] - R_msgs[check][varId];
             }
         }
+
         // Horizontal
-        for (int check_id = 0; check_id < qcMdpc.word_length(); ++check_id) {
-            int minVal = *std::min_element(Q_msgs[check_id].begin(), Q_msgs[check_id].end());
-            int sign = 1;
-            for (const auto& var_id : qcMdpc.adjacent_var_nodes(check_id)) {
-                sign *= Q_msgs[check_id][var_id];
-                if (Q_msgs[check_id][var_id] < 0) {
-                    sign *= -1;
-                } else if (Q_msgs[check_id][var_id] > 0) {
-                    sign *= 1;
-                } else {
-                    sign *= 0;
-                    break;
-                }
+        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+//            int minVal1 = std::abs(Q_msgs[check][0]);
+            std::vector<std::pair<int, int>> minVal(2);
+            minVal[0] = std::make_pair(0, std::abs(Q_msgs[check][0]));
+            minVal[1] = std::make_pair(1, std::abs(Q_msgs[check][1]));
+            if (minVal[0].second > minVal[1].second) {
+                std::swap(minVal[0], minVal[1]);
             }
-            int subMsg = 0;
-            for (const auto& var_id : qcMdpc.adjacent_var_nodes(check_id)) {
-                int index = *std::find(qcMdpc.adjacent_check_nodes(var_id).begin(),
-                                       qcMdpc.adjacent_check_nodes(var_id).end(), check_id);
-                R_msgs[var_id][index] = minVal * sign / (Q_msgs[var_id][subMsg]);
-                subMsg++;
+            int sign = Q_msgs[check][0] >= 0 ? 1 : -1;
+            sign *= Q_msgs[check][1] >= 0 ? 1 : -1;
+
+            for (int varId = 2; varId < rowWeight; ++varId) {
+                if (std::abs(Q_msgs[check][varId]) < minVal[1].second) {
+                    if (std::abs(Q_msgs[check][varId]) > minVal[0].second) {
+                        minVal[1] = std::make_pair(varId, std::abs(Q_msgs[check][varId]));
+                    } else {
+                        minVal[0] = std::make_pair(varId, std::abs(Q_msgs[check][varId]));
+                    }
+                }
+                sign *= Q_msgs[check][varId] >= 0 ? 1 : -1;
+            }
+            for (int varId = 0; varId < rowWeight; ++varId) {
+                if (minVal[0].first != varId) {
+                    R_msgs[check][varId] = minVal[0].second * sign / (Q_msgs[check][varId] >= 0 ? 1 : -1);
+                } else {
+                    R_msgs[check][varId] = minVal[1].second * sign / (Q_msgs[check][varId] >= 0 ? 1 : -1);
+                }
             }
         }
         itNum++;
     }
-    auto decoded_word = qcMdpc.decode(x);
-    std::vector<bool> res(decoded_word.Num_Rows());
-    for (int i = 0; i < res.size(); ++i)
-        res[i] = decoded_word[i][0];
+    std::vector<bool> res(x.Num_Rows());
+    for (int i = 0; i < res.size(); ++i) {
+        res[i] = x[i][0];
+    }
     return res;
 }

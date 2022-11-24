@@ -2,21 +2,19 @@
 
 #include "decoder.h"
 #include "qc_mdpc.h"
+#include "channel.h"
 #include <utility>
 #include <vector>
 
 class MinSumDecoder : public Decoder
 {
 public:
-    MinSumDecoder(qc_mdpc qcMdpc, int maxItNum = 32)
-            : qcMdpc(std::move(qcMdpc)), maxItNum(maxItNum) {};
+    MinSumDecoder(const qc_mdpc& qcMdpc, int maxItNum = 32)
+            : qcMdpc(qcMdpc), maxItNum(maxItNum) {};
 
-    virtual std::vector<int> encode(const std::vector<bool> &word);
-    virtual std::vector<bool> decode(const std::vector<int> &codeword);
+    virtual std::vector<bool> decode(const std::vector<int> &codeword) const;
 
 private:
-    std::vector<std::vector<int>> R_msgs; // var * check
-    std::vector<std::vector<int>> Q_msgs; // check * var
     qc_mdpc qcMdpc;
     int maxItNum;
 };

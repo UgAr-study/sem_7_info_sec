@@ -1,9 +1,9 @@
 #include "../include/qc_mdpc.h"
 
 
-qc_mdpc::qc_mdpc(int n0, int p, int w, int t, int seed)
-        : n0(n0), p(p), w(w), t(t), n(n0 * p), r(p), k((n0 - 1) * p),
-        row(n0 * p), row_col(r, w), col_row(n0 * p, w)
+qc_mdpc::qc_mdpc(int n0, int p, int w, int seed)
+        : n0(n0), p(p), w(w), n(n0 * p), r(p), k((n0 - 1) * p),
+        row(n0 * p), row_col(p, w), col_row(n0 * p, w)
 {
     if (seed == -1) {
         seed = time(0);
@@ -69,9 +69,14 @@ void qc_mdpc::fill_reverse()
     for (int c = 0; c < row.size(); ++c)
         if (row[c] == 1)
             row_col[0][id++] = c;
-    for (int i = 1; i < row_col.Num_Rows(); ++i)
-        for (int c = 0; c < row_col.Num_Columns(); ++c)
-            row_col[i][c] = row_col[0][c] / perm_size() + (row_col[0][c] + i) % perm_size();
+    for (int i = 1; i < row_col.Num_Rows(); ++i) {
+        std::vector<int> one_row(row_col.Num_Columns());
+        for (int c = 0; c < row_col.Num_Columns(); ++c) {
+            one_row[c] = row_col[0][c] / perm_size() * perm_size() + (row_col[0][c] + i) % perm_size();
+        }
+        std::sort(one_row.begin(), one_row.begin() + row_weight(i));
+        row_col[i] = one_row;
+    }
 
     std::vector<int> ids(col_row.Num_Rows());
     for (int i = 0; i < row_col.Num_Rows(); ++i) {
@@ -152,8 +157,8 @@ static int get_max(const std::vector<int> &vec)
 BinMatrix qc_mdpc::encode(const BinMatrix &vec) const
 {
     BinMatrix G = generator_matrix();
-    BinMatrix msg = matrix_mult(vec.Transposition(), G);
-    return msg.Transposition();
+    BinMatrix msg = matrix_mult(vec, G);
+    return msg;
 }
 
 //Decoding the codeword
@@ -165,7 +170,7 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
     int limit = 10;
     int delta = 5;
 
-    auto word_len = word.Num_Rows();
+    auto word_len = word.Num_Columns();
     for (int i = 0; i < limit; i++) {
         std::vector<int> unsatisfied(word_len);
         for (int j = 0; j < word_len; j++) {
@@ -177,7 +182,7 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
         int b = get_max(unsatisfied) - delta;
         for (int j = 0; j < word_len; j++) {
             if (unsatisfied[j] >= b) {
-                word[j][0] = !word[j][0];
+                word[0][j] = !word[0][j];
                 syn = syn + H.mat_splice(0, H.Num_Rows() - 1, j, j);
             }
         }
