@@ -161,7 +161,7 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
 {
     auto word = codeword;
     BinMatrix H = parity_check_matrix();
-    BinMatrix syn = matrix_mult(H, word);
+    BinMatrix syn = matrix_mult(H, word.Transposition());
     int limit = 10;
     int delta = 5;
 
