@@ -24,13 +24,23 @@ add_executable(
         src/mceliece.cpp
 )
 
-
 # decrypt
 #=-------
 set(MDPC_DECRYPT_EXEC mdpc_decrypt)
 add_executable(
         ${MDPC_DECRYPT_EXEC}
         run/decrypt.cpp
+        src/qc_mdpc.cpp
+        src/BinMatrix.cpp
+        src/mceliece.cpp
+)
+
+# test
+#=----
+set(MDPC_TEST_EXEC mdpc_test)
+add_executable(
+        ${MDPC_TEST_EXEC}
+        run/test.cpp
         src/qc_mdpc.cpp
         src/BinMatrix.cpp
         src/mceliece.cpp
