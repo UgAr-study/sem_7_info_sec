@@ -37,6 +37,18 @@ BinMatrix mceliece::encrypt(const BinMatrix &msg)
     return word;
 }
 
+//Encrypt with castom public key
+BinMatrix mceliece::encrypt(const BinMatrix &public_key_, const BinMatrix &msg)
+{
+    if (msg.Num_Columns() != public_key_.Num_Rows()) {
+        printf("Length of message is incorrect: expected %d\n", public_key_.Num_Rows());
+        exit(0);
+    }
+    BinMatrix error = get_error_vector();
+    BinMatrix word = matrix_mult(msg, public_key_) + error;
+    return word;
+}
+
 //Decrypting the recieved message
 BinMatrix mceliece::decrypt(const BinMatrix &word) const
 {

@@ -1,65 +1,41 @@
 #include "../include/qc_mdpc.h"
 
+#include "../../common/CLI11.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <string>
 
 int main(int argc, char const *argv[]) 
 {
-    const std::string fName_private = "private.txt";
-    const std::string fName_public = "public.txt";
+    int n0 = 0, p = 0, w = 0, seed = -1;
+    CLI::App app{"Key generation"};
 
-    if (argc != 5) {
-        std::cout << "invalid arguments command line:\n argc = " <<  argc << std::endl;
-        std::cout << "They are:\n";
-        for (int i = 0; i < argc; i++)
-        {
-            printf ("[%d] %s\n", i, argv[i]);
-        }
-        std::cout << "Expected: \n" 
-        << "n0 -- number of circular blocks\n"
-        << "p  -- permutation size of each circular block\n"
-        << "w  -- row weight\n"
-        << "t  -- error word weight\n";
-        
-        return 1;
-    }
-    std::size_t pos = {};
-    std::string sNum = argv[1];
-    int n0 = std::stoi(sNum, &pos);
-    if (pos != sNum.size()) {
-        std::cout << "Incorrect n0: " << sNum << std::endl;
-    }
+    app.add_option("--n0", n0, "Number of circular blocks in H matrix")->required();
+    app.add_option("--p", p, "Permutation size of circular block")->required();
+    app.add_option("--w", w, "Row weight")->required();
+    app.add_option("--seed", seed, "Seed for random. If == -1, seed will be random generated.")->default_val(-1);
 
-    sNum = argv[2];
-    int p = std::stoi(sNum, &pos);
-    if (pos != sNum.size()) {
-        std::cout << "Incorrect p: " << sNum << std::endl;
-    }
+    std::string fName_private = "private.txt";
+    std::string fName_public = "public.txt";
+    app.add_option("--file-private", fName_private, "file for dump private key")->default_str("private.txt");
+    app.add_option("--file-public", fName_public, "file for dump public key")->default_str("public.txt");
 
-    sNum = argv[3];
-    int w = std::stoi(sNum, &pos);
-    if (pos != sNum.size()) {
-        std::cout << "Incorrect w: " << sNum << std::endl;
-    }
+    CLI11_PARSE(app, argc, argv);
 
-    sNum = argv[4];
-    int t = std::stoi(sNum, &pos);
-    if (pos != sNum.size()) {
-        std::cout << "Incorrect t: " << sNum << std::endl;
-    }
-
-    qc_mdpc key(n0, p, w, t);
+    qc_mdpc key(n0, p, w, seed);
     auto&& HMatrix = key.parity_check_matrix();
     auto&& GMatrix = key.generator_matrix();
 
     std::ofstream fOut(fName_private);
     fOut << "Private Key:" << std::endl;
+    fOut << HMatrix.Num_Rows() << " " << HMatrix.Num_Columns() << std::endl;
     fOut << HMatrix << std::endl;
     fOut.close();
 
     fOut.open(fName_public);
     fOut << "Public Key:" << std::endl;
+    fOut << GMatrix.Num_Rows() << " " << GMatrix.Num_Columns() << std::endl;
     fOut << GMatrix << std::endl;
     fOut.close();
 
