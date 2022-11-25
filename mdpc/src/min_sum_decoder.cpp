@@ -16,14 +16,10 @@
 std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) const {
     // TODO
 
-    std::vector<std::vector<int>> R_msgs(qcMdpc.word_length()); // Check2Var
-    for (int i = 0; i < R_msgs.size(); ++i) {
-           R_msgs[i] = std::vector<int>(qcMdpc.row_weight(i));
-    }
-    std::vector<std::vector<int>> Q_msgs(qcMdpc.codeword_length()); // Var2Check
-    for (int i = 0; i < Q_msgs.size(); ++i) {
-        Q_msgs[i] = std::vector<int>(qcMdpc.col_weight(i));
-    }
+    int rowWeight = qcMdpc.row_weight(0);
+
+    std::vector<std::vector<int>> R_msgs(qcMdpc.word_length(), std::vector<int>(rowWeight)); // Check2Var
+    std::vector<std::vector<int>> Q_msgs(qcMdpc.word_length(), std::vector<int>(rowWeight)); // Var2Check
 
     int itNum = 0;
 
@@ -33,38 +29,56 @@ std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) const {
 
     while (itNum < maxItNum) {
         std::vector<int> sums = in_llrs;
-        for (int checkPos = 0; checkPos < R_msgs.size(); ++checkPos) {
-            for (int varId = 0; varId < R_msgs[checkPos].size(); ++varId) {
-                sums[qcMdpc.adjacent_var_node(checkPos, varId)] += R_msgs[checkPos][varId];
+        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+            for (int varId = 0; varId < rowWeight; ++varId) {
+                sums[qcMdpc.adjacent_var_node(check, varId)] += R_msgs[check][varId];
             }
         }
-        for (int varPos = 0; varPos < qcMdpc.codeword_length(); ++varPos) {
-            x[varPos][0] = (sums[varPos] >= 0) ? 1 : 0;
-        }
 
+        for (int var = 0; var < qcMdpc.codeword_length(); ++var) {
+            x[var][0] = (sums[var] >= 0) ? 1 : 0;
+        }
 
         if (matrix_mult(H, x).is_zero_matrix()) {
             break;
         }
 
         // Vertical
-        for (int varPos = 0; varPos < qcMdpc.codeword_length(); ++varPos) {
-            for (int checkId = 0; checkId < qcMdpc.col_weight(varPos); ++checkId) {
-                int varId = -1;
-                for (int var_id = 0; var_id < qcMdpc.col_weight(varPos); ++var_id) {
-                   if (varPos == qcMdpc.adjacent_check_node(varPos, checkId)) {
-                       varId = var_id;
-                       break;
-                   }
-                }
-                assert(varId >= 0);
-                Q_msgs[varPos][checkId] = sums[varPos] -
-                        R_msgs[qcMdpc.adjacent_check_node(varPos, checkId)][varId];
+        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+            for (int varId = 0; varId < rowWeight; ++varId) {
+              Q_msgs[check][varId] = sums[qcMdpc.adjacent_var_node(check, varId)] - R_msgs[check][varId];
             }
         }
-        // Horizontal
-        for (int check_id = 0; check_id < qcMdpc.word_length(); ++check_id) {
 
+        // Horizontal
+        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+//            int minVal1 = std::abs(Q_msgs[check][0]);
+            std::vector<std::pair<int, int>> minVal(2);
+            minVal[0] = std::make_pair(0, std::abs(Q_msgs[check][0]));
+            minVal[1] = std::make_pair(1, std::abs(Q_msgs[check][1]));
+            if (minVal[0].second > minVal[1].second) {
+                std::swap(minVal[0], minVal[1]);
+            }
+            int sign = Q_msgs[check][0] >= 0 ? 1 : -1;
+            sign *= Q_msgs[check][1] >= 0 ? 1 : -1;
+
+            for (int varId = 2; varId < rowWeight; ++varId) {
+                if (std::abs(Q_msgs[check][varId]) < minVal[1].second) {
+                    if (std::abs(Q_msgs[check][varId]) > minVal[0].second) {
+                        minVal[1] = std::make_pair(varId, std::abs(Q_msgs[check][varId]));
+                    } else {
+                        minVal[0] = std::make_pair(varId, std::abs(Q_msgs[check][varId]));
+                    }
+                }
+                sign *= Q_msgs[check][varId] >= 0 ? 1 : -1;
+            }
+            for (int varId = 0; varId < rowWeight; ++varId) {
+                if (minVal[0].first != varId) {
+                    R_msgs[check][varId] = minVal[0].second * sign / (Q_msgs[check][varId] >= 0 ? 1 : -1);
+                } else {
+                    R_msgs[check][varId] = minVal[1].second * sign / (Q_msgs[check][varId] >= 0 ? 1 : -1);
+                }
+            }
         }
         itNum++;
     }

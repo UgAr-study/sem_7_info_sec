@@ -1,7 +1,6 @@
 #include "../include/Matrix.hpp"
 #include "../include/mceliece.h"
 #include <stdlib.h>
-#include <cstdio.h>
 #include "../include/BinMatrix.h"
 #include <fstream>
 
@@ -34,17 +33,13 @@ int main (int const argc, char const *const argv[])
 		msg[0][i] =  inp;
 	}
 	 
-    mceleice crypt(n0, p, w, t, seed);
+    mceliece crypt(n0, p, w, t, seed);
     BinMatrix m = crypt.decrypt(msg);
 
-    outStream.open ("Decryption.txt");
+    std::ofstream outStream("Decryption.txt");
     outStream << "Decrypted message: \n";
-
-    for (int i = 0; i < m->cols; i++)
-    {
-        outStream << m[0][i] << " ";
-    }
-    outStream.close ();
+    outStream << m;
+    outStream.close();
 
 	return 0;
 }

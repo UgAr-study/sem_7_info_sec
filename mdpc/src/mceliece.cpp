@@ -2,7 +2,7 @@
 
 //Initialize the mceliece cryptosystem
 mceliece::mceliece(int n0, int p, int w, int t, int seed)
-        : code(n0, p, w), public_key(code.generator_matrix()), gen(seed), error_weight(t)
+        : code(n0, p, w, seed), public_key(code.generator_matrix()), gen(seed), error_weight(t)
 {
 }
 

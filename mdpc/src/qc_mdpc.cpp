@@ -3,7 +3,7 @@
 
 qc_mdpc::qc_mdpc(int n0, int p, int w, int seed)
         : n0(n0), p(p), w(w), n(n0 * p), r(p), k((n0 - 1) * p),
-        row(n0 * p), row_col(r, w), col_row(n0 * p, w)
+        row(n0 * p), row_col(p, w), col_row(n0 * p, w)
 {
     if (seed == -1) {
         seed = time(0);
