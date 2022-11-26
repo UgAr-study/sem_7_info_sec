@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
     app.add_option("--file-public", fName_public, "file with public key")->default_str("public.txt");
 
 	std::string fName_msg = "";
-    app.add_option("--file-msg", fName_msg, "file with msg to encrypt")->required();
+    app.add_option("--file-msg", fName_msg, "file with msg to encrypt. file should contain msg in format: 0 0 1 0 ...")->required();
 
 	std::string fName_res = "Encrypted.txt";
     app.add_option("--file-res", fName_res, "file wfor dump cipher")->default_str("Encrypted.txt");
@@ -33,20 +33,11 @@ int main(int argc, char const *argv[])
 
 
 	std::ifstream fIn(fName_msg);
-	std::stringstream buffer;
-	buffer << fIn.rdbuf();
-	fIn.close();
-	std::string tmp_msg = buffer.str();
-	std::cout << "WARNING: msg size is " << tmp_msg.size() << " byte" << std::endl;  
-
 	int k = (n0 - 1) * p;
 	BinMatrix msg (1, k);
 	for (int i = 0; i < k; i++)
 	{
-		// go along bites
-		int byte = i / 8;
-		int bit = i % 8;
-		msg[0][i] = tmp_msg[byte] & (1 << bit);
+		fIn >> msg[0][i];
 	}
 
 	// read public key
