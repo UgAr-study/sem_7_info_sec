@@ -12,6 +12,7 @@ private:
     using row_t = std::vector<bool>;
 public:
     qc_mdpc(int n0, int p, int w, int seed = -1);
+    qc_mdpc(const BinMatrix& mat);
     int codeword_length() const { return n; }
     int word_length() const { return k; }
     int perm_size() const { return p; }

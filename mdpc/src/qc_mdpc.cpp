@@ -3,7 +3,7 @@
 
 qc_mdpc::qc_mdpc(int n0, int p, int w, int seed)
         : n0(n0), p(p), w(w), n(n0 * p), r(p), k((n0 - 1) * p),
-        row(n0 * p), row_col(p, w), col_row(n0 * p, w)
+          row(n0 * p), row_col(p, w), col_row(n0 * p, w)
 {
     if (seed == -1) {
         seed = time(0);
@@ -29,6 +29,24 @@ qc_mdpc::qc_mdpc(int n0, int p, int w, int seed)
         reset_row();
     }
     std::cout << "MDPC code generated....\n";
+    fill_reverse();
+}
+
+qc_mdpc::qc_mdpc(const BinMatrix &mat)
+        : n0(mat.Num_Columns() / mat.Num_Rows()), p(mat.Num_Rows()),
+          n(mat.Num_Columns()), r(mat.Num_Rows()), k(mat.Num_Columns() - mat.Num_Rows()),
+          row(mat.Num_Columns())
+{
+    if (n != n0 * p)
+        throw std::invalid_argument("Bad matrix's size");
+    w = 0;
+    for (int i = 0; i < mat.Num_Columns(); ++i) {
+        row[i] = mat[0][i];
+        if (row[i] == 1)
+            w++;
+    }
+    row_col = mtrx::Matrix_t<int>(p, w);
+    col_row = mtrx::Matrix_t<int>(n, w);
     fill_reverse();
 }
 
@@ -86,6 +104,7 @@ void qc_mdpc::fill_reverse()
         }
     }
 }
+
 //Create a binary circular matrix
 BinMatrix qc_mdpc::make_matrix(int nrows, int ncols, const qc_mdpc::row_t &row) const
 {
@@ -167,7 +186,7 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
     return decode(parity_check_matrix(), codeword);
 }
 
-BinMatrix qc_mdpc::decode(const BinMatrix& parity_check, const BinMatrix& codeword) const
+BinMatrix qc_mdpc::decode(const BinMatrix &parity_check, const BinMatrix &codeword) const
 {
     auto word = codeword;
     BinMatrix H = parity_check;
