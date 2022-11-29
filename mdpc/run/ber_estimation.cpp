@@ -8,12 +8,14 @@ int main(int argc, char *argv[])
     float snr;
     int n_samples;
     std::string mat_file;
+    bool random;
 
     CLI::App app{"Key generation"};
 
     app.add_option("--snr", snr, "SNR for which BER estimation is conducted")->required();
     app.add_option("--mat", mat_file, "Path to parity check matrix")->required();
     app.add_option("--samples", n_samples, "Number of trials for Monte Carlo estimation")->required();
+    app.add_flag("--random", random, "All-zero words if false, random if true");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -22,7 +24,7 @@ int main(int argc, char *argv[])
     MsgGenerator generator(mdpc, snr);
     int bit_ers = 0;
     for (int i = 0; i < n_samples; ++i) {
-        auto msg = generator.zero();
+        auto msg = random ? generator.random() : generator.zero();
         auto decoded = decoder.decode(msg.llr);
         for (int j = 0; j < msg.information.size(); ++j)
             bit_ers += (msg.information[j] != decoded[j]);
