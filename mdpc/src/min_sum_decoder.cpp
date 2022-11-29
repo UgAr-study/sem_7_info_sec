@@ -24,12 +24,12 @@ std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) const {
     int itNum = 0;
 
     BinMatrix H = qcMdpc.parity_check_matrix();
-    std::cout << H << std::endl;
+//    std::cout << H << std::endl;
     BinMatrix x(in_llrs.size(), 1);
 
     while (itNum < maxItNum) {
         std::vector<int> sums = in_llrs;
-        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+        for (int check = 0; check < qcMdpc.perm_size(); ++check) {
             for (int varId = 0; varId < rowWeight; ++varId) {
                 sums[qcMdpc.adjacent_var_node(check, varId)] += R_msgs[check][varId];
             }
@@ -44,14 +44,14 @@ std::vector<bool> MinSumDecoder::decode(const std::vector<int>& in_llrs) const {
         }
 
         // Vertical
-        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+        for (int check = 0; check < qcMdpc.perm_size(); ++check) {
             for (int varId = 0; varId < rowWeight; ++varId) {
               Q_msgs[check][varId] = sums[qcMdpc.adjacent_var_node(check, varId)] - R_msgs[check][varId];
             }
         }
 
         // Horizontal
-        for (int check = 0; check < qcMdpc.word_length(); ++check) {
+        for (int check = 0; check < qcMdpc.perm_size(); ++check) {
 //            int minVal1 = std::abs(Q_msgs[check][0]);
             std::vector<std::pair<int, int>> minVal(2);
             minVal[0] = std::make_pair(0, std::abs(Q_msgs[check][0]));
