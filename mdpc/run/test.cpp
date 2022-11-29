@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
+#include <chrono>
+#include <random>
 
 int main(int argc, char const *argv[])
 {
@@ -22,24 +24,27 @@ int main(int argc, char const *argv[])
 	std::cout << "Enter seed: " << "\n";
 	std::scanf("%d", &seed);
 
-	int k = (n0 - 1) * p;
-	std::cout << "Enter Message of length " << k << "\n";
-	std::uint8_t inp;
+    if(seed == -1) {
+        seed = std::time(nullptr);
+    }
+    std::srand(seed);
 
+    // generate random message
+    //=-----------------------
+	int k = (n0 - 1) * p;
+    
 	BinMatrix msg (1, k);
 	for (int i = 0; i < k; i++)
 	{
-		std::scanf ("%hho", &inp);
-		msg[0][i] = inp;
+		msg[0][i] = std::rand();
 	}
 
 	mceliece crypt (n0, p, w, t, seed);
-    BinMatrix m = crypt.encrypt (msg);
+    BinMatrix m = crypt.encrypt(msg);
+    BinMatrix decrypted = crypt.decrypt(m);
 
-	std::ofstream outStream("Encryption.txt");
-    outStream << "Encryption message: \n";
-	outStream << m;
-    outStream.close();
+	bool res = (decrypted == msg);
+    std::cout << "Status: " << res << std::endl;
 	
 	return 0;
 }
