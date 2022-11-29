@@ -13,7 +13,8 @@ add_executable(
         src/BinMatrix.cpp
 )
 target_include_directories(${MDPC_KEY_GEN_EXEC} PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/mdpc/include
+        ${CMAKE_SOURCE_DIR}/common
 )
 
 # encrypt
@@ -27,7 +28,8 @@ add_executable(
         src/mceliece.cpp
 )
 target_include_directories(${MDPC_ENCRYPT_EXEC} PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/mdpc/include
+        ${CMAKE_SOURCE_DIR}/common
 )
 
 # decrypt
@@ -41,7 +43,8 @@ add_executable(
         src/mceliece.cpp
 )
 target_include_directories(${MDPC_DECRYPT_EXEC} PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/mdpc/include
+        ${CMAKE_SOURCE_DIR}/common
 )
 
 # test
@@ -55,5 +58,6 @@ add_executable(
         src/mceliece.cpp
 )
 target_include_directories(${MDPC_TEST_EXEC} PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/mdpc/include
+        ${CMAKE_SOURCE_DIR}/common
 )
