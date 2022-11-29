@@ -69,10 +69,12 @@ add_executable(
         ${MDPC_BER_EST_EXEC}
         run/ber_estimation.cpp
         src/mceliece_min_sum.cpp
+        src/min_sum_decoder.cpp
+        src/channel.cpp
         src/qc_mdpc.cpp
         src/BinMatrix.cpp
         src/mceliece.cpp
-)
+        src/msg_generator.cpp)
 target_include_directories(${MDPC_BER_EST_EXEC} PUBLIC
         ${CMAKE_SOURCE_DIR}/mdpc/include
         ${CMAKE_SOURCE_DIR}/common
