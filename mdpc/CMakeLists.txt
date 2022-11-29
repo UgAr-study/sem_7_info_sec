@@ -61,3 +61,19 @@ target_include_directories(${MDPC_TEST_EXEC} PUBLIC
         ${CMAKE_SOURCE_DIR}/mdpc/include
         ${CMAKE_SOURCE_DIR}/common
 )
+
+# test
+#=----
+set(MDPC_BER_EST_EXEC mdpc_ber_est)
+add_executable(
+        ${MDPC_BER_EST_EXEC}
+        run/ber_estimation.cpp
+        src/mceliece_min_sum.cpp
+        src/qc_mdpc.cpp
+        src/BinMatrix.cpp
+        src/mceliece.cpp
+)
+target_include_directories(${MDPC_BER_EST_EXEC} PUBLIC
+        ${CMAKE_SOURCE_DIR}/mdpc/include
+        ${CMAKE_SOURCE_DIR}/common
+)
