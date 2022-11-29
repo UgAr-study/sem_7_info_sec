@@ -1,6 +1,6 @@
-#include "../include/qc_mdpc.h"
+#include "qc_mdpc.h"
 
-#include "../../common/CLI11.hpp"
+#include "CLI11.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -27,14 +27,14 @@ int main(int argc, char const *argv[])
     auto&& HMatrix = key.parity_check_matrix();
     auto&& GMatrix = key.generator_matrix();
 
-    std::ofstream fOut(fName_private);
-    fOut << "Private Key:" << std::endl;
+    std::ofstream fOut(fName_public);
+    fOut << "Public Key:" << std::endl;
     fOut << HMatrix.Num_Rows() << " " << HMatrix.Num_Columns() << std::endl;
     fOut << HMatrix << std::endl;
     fOut.close();
 
-    fOut.open(fName_public);
-    fOut << "Public Key:" << std::endl;
+    fOut.open(fName_private);
+    fOut << "Private Key:" << std::endl;
     fOut << GMatrix.Num_Rows() << " " << GMatrix.Num_Columns() << std::endl;
     fOut << GMatrix << std::endl;
     fOut.close();
