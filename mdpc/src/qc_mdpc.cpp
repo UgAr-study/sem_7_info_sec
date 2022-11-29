@@ -130,7 +130,7 @@ BinMatrix qc_mdpc::parity_check_matrix() const
     }
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    std::cout << "Time for H: " << cpu_time_used << std::endl;
+//    std::cout << "Time for H: " << cpu_time_used << std::endl;
     return H;
 }
 
@@ -143,7 +143,7 @@ BinMatrix qc_mdpc::generator_matrix() const
     BinMatrix H = parity_check_matrix();
 
     //End of modified code
-    std::cout << "Construction of G started...\n";
+//    std::cout << "Construction of G started...\n";
     BinMatrix H_inv = make_matrix(p, p, splice_row((n0 - 1) * p, n)).circ_matrix_inverse();
     BinMatrix H_0 = make_matrix(p, p, splice_row(0, p));
     BinMatrix Q = matrix_mult(H_inv, H_0).Transposition();
@@ -161,8 +161,8 @@ BinMatrix qc_mdpc::generator_matrix() const
     //G = matrix_rref(G);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    std::cout << "Time for G: " << cpu_time_used << std::endl;
-    std::cout << "Generator matrix generated....\n";
+//    std::cout << "Time for G: " << cpu_time_used << std::endl;
+//    std::cout << "Generator matrix generated....\n";
     return G;
 }
 
