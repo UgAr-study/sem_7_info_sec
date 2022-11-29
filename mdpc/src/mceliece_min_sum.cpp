@@ -1,7 +1,12 @@
 #include "mceliece_min_sum.h"
 
 mceliece_min_sum::mceliece_min_sum(int n0, int p, int w, float snr, int seed)
-        : code(n0, p, w), public_key(code.generator_matrix()), ch(snr), decoder(code)
+        : code(n0, p, w, seed), public_key(code.generator_matrix()), ch(snr), decoder(code)
+{
+}
+
+mceliece_min_sum::mceliece_min_sum(const BinMatrix &mdpc, float snr)
+        : code(mdpc), public_key(code.generator_matrix()), ch(snr), decoder(code)
 {
 }
 
