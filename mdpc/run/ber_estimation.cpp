@@ -1,5 +1,6 @@
-#include "mceliece_min_sum.h"
 #include "matrix_storage.hpp"
+#include "min_sum_decoder.hpp"
+#include "msg_generator.h"
 #include "CLI11.hpp"
 
 int main(int argc, char *argv[])
@@ -16,6 +17,16 @@ int main(int argc, char *argv[])
 
     CLI11_PARSE(app, argc, argv);
 
-    auto mdpc = LoadMatrix(mat_file);
-    mceliece_min_sum mceliece();
+    qc_mdpc mdpc = LoadMatrix(mat_file);
+    MinSumDecoder decoder(mdpc);
+    MsgGenerator generator(mdpc, snr);
+    int bit_ers = 0;
+    for (int i = 0; i < n_samples; ++i) {
+        auto msg = generator.zero();
+        auto decoded = decoder.decode(msg.llr);
+        for (int j = 0; j < msg.information.size(); ++j)
+            bit_ers += (msg.information[j] != decoded[j]);
+    }
+
+    std::cout << bit_ers << " error bits of " << n_samples * mdpc.word_length() << std::endl;
 }
