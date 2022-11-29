@@ -164,8 +164,13 @@ BinMatrix qc_mdpc::encode(const BinMatrix &vec) const
 //Decoding the codeword
 BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
 {
+    return decode(parity_check_matrix(), codeword);
+}
+
+BinMatrix qc_mdpc::decode(const BinMatrix& parity_check, const BinMatrix& codeword) const
+{
     auto word = codeword;
-    BinMatrix H = parity_check_matrix();
+    BinMatrix H = parity_check;
     BinMatrix syn = matrix_mult(H, word.Transposition());
     int limit = 10;
     int delta = 5;
@@ -193,6 +198,3 @@ BinMatrix qc_mdpc::decode(const BinMatrix &codeword) const
     std::cout << "Decoding failure...\n";
     return {0, 0};
 }
-
-
-

@@ -25,7 +25,8 @@ public:
     BinMatrix parity_check_matrix() const;
     BinMatrix generator_matrix() const;
     BinMatrix encode(const BinMatrix& vec) const;
-    BinMatrix decode(const BinMatrix& word) const;
+    BinMatrix decode(const BinMatrix& codeword) const;
+    BinMatrix decode(const BinMatrix& parity_check, const BinMatrix& codeword) const;
 
 private:
     void reset_row();
