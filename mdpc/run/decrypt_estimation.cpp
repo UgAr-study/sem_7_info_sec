@@ -17,7 +17,7 @@ int main (int argc, char* argv[])
 
     app.add_option("--snr", snr, "SNR for encryption")->required();
     app.add_option("--mat", mat_file, "Path to parity check matrix")->required();
-    app.add_option("--output", mat_file, "Path to output file, if skipped, standard output is used ")->default_str("std");
+    app.add_option("--output", file_out, "Path to output file, if skipped, standard output is used ")->default_str("std");
     app.add_option("--samples", n_samples, "Number of trials for mean decryption time estimation")->required();
     app.add_flag("--random", random, "All-zero words if false, random if true");
 
@@ -36,20 +36,20 @@ int main (int argc, char* argv[])
         auto start_time = std::chrono::steady_clock::now();
         auto decrypted = crypt.decrypt(ciphered);
         auto end_time = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
         times[i] = elapsed.count();
         if (info != decrypted)
             decr_ers++;
     }
 
     if (file_out == "std") {
-        std::cout << "Decryption failures: " << decr_ers << "\nTimes:" << std::endl;
+        std::cout << "Decryption failures: " << decr_ers << "\nTimes (ms):" << std::endl;
         for (auto &&t: times)
             std::cout << t << std::endl;
     }
     else {
         std::ofstream out(file_out);
-        out << "Decryption failures: " << decr_ers << "\nTimes:" << std::endl;
+        out << "Decryption failures: " << decr_ers << "\nTimes (ms):" << std::endl;
         for (auto &&t: times)
             out << t << std::endl;
         out.close();
