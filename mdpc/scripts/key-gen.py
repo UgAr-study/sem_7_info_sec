@@ -4,18 +4,19 @@ import subprocess
 import sys
 import tempfile
 from termios import CWERASE
+import numpy as np
 
-N0 = range(2, 6)
+N0 = [3, 4]
 P = [128, 256, 512, 1024]
 path = "../../matrix/"
 
 for n0 in N0:
     processes = []
     for p in P:
-        w = int(32 / 640 * n0 * p)
+        w = int((n0 * p)**0.49)
         proc = subprocess.Popen(
             ["./helper-key-gen.sh",
-             str(n0), str(p), str(p), str(n0*p+w), 
+             str(n0), str(p), str(w), str(n0*p+w), 
              path + "private_"+str(n0)+str(p)+str(w)+str(".txt"),
              path + "public_"+str(n0)+str(p)+str(w)+str(".txt")])
         processes.append(proc)

@@ -6,8 +6,8 @@ import tempfile
 from termios import CWERASE
 
 # N0 = range(2, 6)
-N0 = [5]
-P = [128, 256, 512]
+N0 = [2,3,4,5]
+P = [128, 256, 512, 1024]
 samples = 1000
 path = "../../results/"
 matPath = "../../matrix/"
@@ -16,7 +16,8 @@ matPath = "../../matrix/"
 for n0 in N0:
     for p in P:
         processes = []
-        w = int(32 / 640 * n0 * p)
+        # w = int(32 / 640 * n0 * p)
+        w = int((n0 * p)**0.49)
         for snr10 in range(50, 81):
             snr = snr10 / 10
             f = tempfile.NamedTemporaryFile()
