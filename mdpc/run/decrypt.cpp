@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "../include/BinMatrix.h"
 #include <fstream>
+#include <chrono>
 
 int main (int const argc, char const *const argv[])
 {
@@ -21,11 +22,14 @@ int main (int const argc, char const *const argv[])
     std::string fName_private = "private.txt";
     app.add_option("--file-private", fName_private, "file with private key")->default_str("private.txt");
 
-	std::string fName_cipher = "";
-    app.add_option("--file-cipher", fName_cipher, "file with cipher to decrypt")->required();
+	//std::string fName_cipher = "";
+    //app.add_option("--file-cipher", fName_cipher, "file with cipher to decrypt")->required();
 
 	std::string fName_res = "Decrypted.txt";
     app.add_option("--file-res", fName_res, "result file")->default_str("Decrypted.txt");
+
+	std::string fName_time_res = "";
+    app.add_option("--file-time", fName_res, "file for time result")->default_str("");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -63,13 +67,27 @@ int main (int const argc, char const *const argv[])
 		}
 	}
 	 
+	auto start_time = std::chrono::steady_clock::now();
+	
     mceliece crypt(n0, p, w, t, seed);
     BinMatrix m = crypt.decrypt(private_key, cipher);
+
+	auto end_time = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+	std::cout << "Time in mls: " << elapsed.count() << std::endl;
 
 	std::cout << "Dump msg to: " << fName_res << std::endl;
     std::ofstream outStream(fName_res);
     outStream << m;
     outStream.close();
+
+	if(!fName_time_res.empty()) {
+		std::cout << "Dum time result to: " << fName_time_res << std::endl;
+		std::ofstream outTime(fName_time_res);
+		outTime << elapsed.count();
+		outTime.close();
+	}
 
 	return 0;
 }
