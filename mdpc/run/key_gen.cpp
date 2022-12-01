@@ -28,13 +28,13 @@ int main(int argc, char const *argv[])
     auto&& GMatrix = key.generator_matrix();
 
     std::ofstream fOut(fName_private);
-    fOut << "Private Key:" << std::endl;
+//    fOut << "Private Key:" << std::endl;
     fOut << HMatrix.Num_Rows() << " " << HMatrix.Num_Columns() << std::endl;
     fOut << HMatrix << std::endl;
     fOut.close();
 
     fOut.open(fName_public);
-    fOut << "Public Key:" << std::endl;
+//    fOut << "Public Key:" << std::endl;
     fOut << GMatrix.Num_Rows() << " " << GMatrix.Num_Columns() << std::endl;
     fOut << GMatrix << std::endl;
     fOut.close();

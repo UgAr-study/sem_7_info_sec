@@ -30,5 +30,11 @@ int main(int argc, char *argv[])
             bit_ers += (msg.information[j] != decoded[j]);
     }
 
-    std::cout << bit_ers << " error bits of " << n_samples * mdpc.word_length() << std::endl;
+    auto snr_str = std::to_string(snr);
+    std::ofstream file("results/out-" + snr_str + ".txt");
+    file << "SNR\tErrors\tTotal\n"
+         << snr << "\t" << bit_ers << "\t" << n_samples * mdpc.word_length();
+    file.close();
+    std::cout << "SNR " + snr_str + " done\n";
+    return 0;
 }
