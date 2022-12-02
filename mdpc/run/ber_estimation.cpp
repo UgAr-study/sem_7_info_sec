@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     int n_samples;
     std::string mat_file;
     bool random;
+    std::string outFile;
 
     CLI::App app{"Key generation"};
 
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     app.add_option("--mat", mat_file, "Path to parity check matrix")->required();
     app.add_option("--samples", n_samples, "Number of trials for Monte Carlo estimation")->required();
     app.add_flag("--random", random, "All-zero words if false, random if true");
+    app.add_option("--outFile", outFile, "Kek");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -31,10 +33,10 @@ int main(int argc, char *argv[])
     }
 
     auto snr_str = std::to_string(snr);
-    std::ofstream file("results/out-" + snr_str + ".txt");
-    file << "SNR\tErrors\tTotal\n"
-         << snr << "\t" << bit_ers << "\t" << n_samples * mdpc.word_length();
+    std::ofstream file(outFile);
+//    file << "SNR\tErrors\tTotal\n";
+    file << snr << "\t" << bit_ers << "\t" << n_samples * mdpc.word_length() << "\n";
     file.close();
-    std::cout << "SNR " + snr_str + " done\n";
+//    std::cout << "SNR " + snr_str + " done\n";
     return 0;
 }
